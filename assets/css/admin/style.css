@@ -1,0 +1,33 @@
+/* Sidebar */
+#wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+  }
+  
+  #sidebar-wrapper {
+    min-width: 250px;
+    max-width: 250px;
+  }
+  
+  #page-content-wrapper {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  /* Responsive sidebar toggle (jika diperlukan) */
+  @media (max-width: 768px) {
+    #sidebar-wrapper {
+      min-width: 0;
+      max-width: 0;
+      display: none;
+    }
+  }
+  
+  /* Footer */
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+  
