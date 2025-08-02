@@ -8,7 +8,18 @@
 				</div>
 				<div class="card-body">
 					<form action="<?= site_url('kepesertaan/update/' . $kepesertaan->id) ?>" method="post" enctype="multipart/form-data">
+						<br>
 						<div class="mb-3">
+							<input type="hidden" name="foto_ktp_lama" value="<?= $kepesertaan->foto_ktp ?>">
+							<label for="foto_ktp" class="form-label">Upload Foto KTP</label>
+							<input type="file" class="form-control" name="foto_ktp" id="foto_ktp" accept="image/*">
+						</div>
+
+						<?php if ($kepesertaan->foto_ktp): ?>
+							<p>Foto KTP saat ini:</p>
+							<img src="<?= base_url('uploads/ktp/' . $kepesertaan->foto_ktp) ?>" width="200">
+						<?php endif; ?>
+						<div class="mb-3 mt-4">
 							<label class="form-label" for="no_kartu">No KK:</label>
 							<small id="kkWarning" class="form-text text-danger d-none">
 								No KK harus 16 digit angka.
@@ -105,17 +116,6 @@
 								<input type="hidden" name="user_id" id="user_id" value="<?= $kepesertaan->user_id ?>" />
 							<?php endif; ?>
 						</div>
-
-						<div class="mb-3">
-							<input type="hidden" name="foto_ktp_lama" value="<?= $kepesertaan->foto_ktp ?>">
-							<label for="foto_ktp" class="form-label">Upload Foto KTP</label>
-							<input type="file" class="form-control" name="foto_ktp" id="foto_ktp" accept="image/*">
-						</div>
-
-						<?php if ($kepesertaan->foto_ktp): ?>
-							<p>Foto KTP saat ini:</p>
-							<img src="<?= base_url('uploads/ktp/' . $kepesertaan->foto_ktp) ?>" width="200">
-						<?php endif; ?>
 
 						<a href="<?= site_url('kepesertaan') ?>" class="btn btn-secondary">Kembali</a>
 						<button type="submit" class="btn btn-primary">Update</button>

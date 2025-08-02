@@ -66,11 +66,12 @@
 								?>
 								<?php if ($status_aktif == 'Aktif') : ?>
 									<span class="badge badge-success">Aktif</span>
+								<?php elseif ($status_aktif == 'Menunggu Aktivasi') : ?>
+									<span class="badge badge-warning">Menunggu Aktivasi</span>
 								<?php else : ?>
 									<span class="badge badge-danger">Tidak Aktif</span>
 								<?php endif; ?>
 							</td>
-
 
 
 							<td class="text-center">
@@ -84,9 +85,9 @@
 											<a class="dropdown-item" href="<?= site_url('kepesertaan/edit/' . $p->id) ?>">Edit</a>
 
 											<?php if ($status_aktif == 'Aktif'): ?>
-												<a class="dropdown-item text-warning" href="<?= site_url('kepesertaan_bpjs/nonaktifkan/' . $p->id) ?>" onclick="return confirm('Nonaktifkan peserta ini?');">Nonaktifkan</a>
+												<a class="dropdown-item text-danger" href="<?= site_url('kepesertaan/update_status/' . $p->id . '/nonaktif') ?>" onclick="return confirm('Nonaktifkan peserta ini?');">Nonaktifkan</a>
 											<?php else: ?>
-												<a class="dropdown-item text-success" href="<?= site_url('kepesertaan_bpjs/aktifkan/' . $p->id) ?>" onclick="return confirm('Aktifkan peserta ini?');">Aktif</a>
+												<a class="dropdown-item text-success" href="<?= site_url('kepesertaan/update_status/' . $p->id . '/aktif') ?>" onclick="return confirm('Aktifkan peserta ini?');">Aktifkan</a>
 											<?php endif; ?>
 
 										<?php endif; ?>

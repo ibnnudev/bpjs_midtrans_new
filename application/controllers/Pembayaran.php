@@ -24,6 +24,7 @@ class Pembayaran extends MY_Controller
 	public function index()
 	{
 		$data['pembayaran'] = $this->Pembayaran_model->get_all();
+
 		$this->load->view('template/layout', [
 			'content' => 'pembayaran/index',
 			'pembayaran' => $data['pembayaran']
@@ -234,10 +235,6 @@ class Pembayaran extends MY_Controller
 		return $selisih_bulan;
 	}
 
-
-
-
-
 	public function process_payment()
 	{
 		$json = file_get_contents("php://input");
@@ -259,8 +256,9 @@ class Pembayaran extends MY_Controller
 		$status_kepesertaan = 'Tidak Aktif';
 
 		if ($status_code == '200') {
-			$status = 'lunas';
-			$status_kepesertaan = 'Aktif';
+			// menunggu review dari admin untuk aktivasi
+			$status = 'review';
+			$status_kepesertaan = 'Menunggu Aktivasi';
 		} elseif ($status_code == '202') {
 			$status = 'gagal';
 		}
@@ -274,40 +272,6 @@ class Pembayaran extends MY_Controller
 
 		log_message('info', "Payment Updated: $order_id | Status: $status | Kepesertaan: $status_kepesertaan");
 	}
-
-
-	// public function process_payment()
-	// {
-	//     $json = file_get_contents("php://input");
-	//     file_put_contents('midtrans_callback.log', $json . PHP_EOL, FILE_APPEND); // Log untuk debug
-
-	//     $result = json_decode($json, true);
-
-	//     if (!$result) {
-	//         log_message('error', 'Invalid Midtrans Callback');
-	//         return;
-	//     }
-
-	//     $order_id = $result['order_id'];
-	//     $status_code = $result['status_code'];
-	//     $payment_type = $result['payment_type'] ?? 'unknown';
-
-	//     // Mapping status Midtrans ke status di database
-	//     $status = 'pending';
-	//     if ($status_code == '200') {
-	//         $status = 'lunas';
-	//     } elseif ($status_code == '202') {
-	//         $status = 'gagal';
-	//     }
-
-	//     // Update status & metode pembayaran di database
-	//     $this->db->where('order_id', $order_id)->update('pembayaran_bpjs', [
-	//         'status' => $status,
-	//         'metode_pembayaran' => $payment_type
-	//     ]);
-
-	//     log_message('info', 'Payment Updated: ' . $order_id . ' Status: ' . $status);
-	// }
 
 
 	public function hapus($id)

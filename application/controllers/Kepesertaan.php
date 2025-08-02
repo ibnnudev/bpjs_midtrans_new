@@ -33,33 +33,35 @@ class Kepesertaan extends MY_Controller
 	public function store()
 	{
 		if ($_POST) {
-			// Konfigurasi upload
-			$config['upload_path']   = './uploads/ktp/';
-			$config['allowed_types'] = 'jpg|jpeg|png';
-			$config['max_size']      = 2048; // 2MB
-			$config['encrypt_name']  = TRUE;
+			$this->form_validation->set_rules('nik', 'NIK', 'required|callback_check_duplicate_nik');
+			$this->form_validation->set_rules('no_kartu', 'No Kartu', 'required|callback_check_duplicate_no_kartu');
+			$this->form_validation->set_rules('nama', 'Nama', 'required');
+			$this->form_validation->set_rules('tanggal_lahir', 'Tanggal Lahir', 'required|callback_valid_tanggal_lahir');
+			$this->form_validation->set_rules('foto_ktp', 'Foto KTP', 'callback_validate_foto_ktp');
 
-			$this->load->library('upload', $config);
+			if ($this->form_validation->run() == FALSE) {
+				$data['error'] = validation_errors();
+				$data['faskes'] = $this->db->get('faskes')->result();
+				$data['kelas'] = $this->db->get('kelas_bpjs')->result();
+				$data['users'] = $this->db->get('users')->result();
+				$this->load->view('kepesertaan/create', $data);
+			} else {
+				$data = $this->input->post();
+				$data['foto_ktp'] = $this->upload_foto_ktp();
 
-			$data = $this->input->post();
-
-			// Cek apakah ada file yang diupload
-			if (!empty($_FILES['foto_ktp']['name'])) {
-				if ($this->upload->do_upload('foto_ktp')) {
-					$upload_data = $this->upload->data();
-					$data['foto_ktp'] = $upload_data['file_name'];
-				} else {
-					// Gagal upload
-					$data['error'] = $this->upload->display_errors();
+				if (!$data['foto_ktp']) {
+					$data['error'] = 'Gagal mengupload foto KTP.';
 					$this->load->view('kepesertaan/create', $data);
 					return;
 				}
-			}
 
-			$this->Kepesertaan_model->insert($data);
-			redirect('kepesertaan');
+				// penting 1:
+				$data['status_aktif'] = 'Tidak Aktif';
+				$this->Kepesertaan_model->insert($data);
+				redirect('kepesertaan');
+			}
 		} else {
-			$this->load->view('kepesertaan/create');
+			redirect('kepesertaan/create');
 		}
 	}
 
@@ -325,5 +327,36 @@ class Kepesertaan extends MY_Controller
 			return false;
 		}
 		return true;
+	}
+
+	public function update_status($id, $status)
+	{
+		if ($status == 'aktif') {
+			$status_kepesertaan = 'Aktif';
+			$status = 'lunas';
+		} elseif ($status == 'nonaktif') {
+			$status_kepesertaan = 'Tidak Aktif';
+			$status = 'gagal';
+		} elseif ($status == 'menunggu') {
+			$status_kepesertaan = 'Menunggu Aktivasi';
+			$status = 'review';
+		}
+
+		$this->db->where('id', $id);
+		$this->db->update('kepesertaan_bpjs', ['status_aktif' => $status_kepesertaan]);
+		// Update status kepesertaan di tabel pembayaran_bpjs
+		$this->db->where('kepesertaan_id', $id);
+		$this->db->update('pembayaran_bpjs', [
+			'status_kepesertaan' => $status_kepesertaan,
+			'status' => $status
+		]);
+
+		if ($this->db->affected_rows() > 0) {
+			$this->session->set_flashdata('message', 'Status kepesertaan berhasil diupdate!');
+		} else {
+			$this->session->set_flashdata('error', 'Gagal mengupdate status kepesertaan.');
+		}
+
+		redirect('kepesertaan');
 	}
 }

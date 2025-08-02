@@ -83,4 +83,11 @@ class Kepesertaan_model extends CI_Model
 		}
 		return $this->db->get('kepesertaan_bpjs')->num_rows() > 0;
 	}
+
+	public function update_status($id, $status)
+	{
+		$this->db->where('id', $id);
+		$data = ['status_kepesertaan' => $status];
+		return $this->db->update('kepesertaan_bpjs', $data);
+	}
 }
